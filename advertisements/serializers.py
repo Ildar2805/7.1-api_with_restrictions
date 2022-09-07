@@ -29,6 +29,9 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         if self.context["request"].method == 'POST':
             advertisements_count = Advertisement.objects.filter(creator=self.context["request"].user, status='OPEN').count()
             if advertisements_count >= 10:
-                raise serializers.ValidationError("You have 10 open advertisements. You can't create new one.")
-
+                raise serializers.ValidationError("You already have 10 open advertisements. You can't create new one.")
+        elif self.context["request"].method == 'PATCH' and data['status'] == 'OPEN':
+            advertisements_count = Advertisement.objects.filter(creator=self.context["request"].user, status='OPEN').count()
+            if advertisements_count >= 10:
+                raise serializers.ValidationError("You already have 10 open advertisements. You can't add new one.")
         return data
